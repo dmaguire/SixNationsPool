@@ -1,3 +1,7 @@
+# Data files used by the SixNationsApp
+matches.data
+players.data
+
 *.py[cod]
 
 # C extensions
