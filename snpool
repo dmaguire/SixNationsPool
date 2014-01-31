@@ -312,6 +312,14 @@ if __name__ == '__main__':
             guess = (sys.argv[5], sys.argv[6])
             addGuess (playerid = sys.argv[3], matchid = sys.argv[4], guess = guess)
 
+        elif sys.argv[2] == 'help':
+            print 'update name <id> <name> \t\t- Updates players forename.'
+            print 'update surname <id> <surname> \t- Updates players surname.'
+            print 'update email <id> <email> \t\t- Updates players email.'
+            print 'update paid <id> <paid> \t\t- Updates players paid status.'
+            print 'update guess <id> <match-id> <homescore> <awayscore> - Updates players guess for specified match.'
+            exit(1)
+        
         else:
             print 'Unknown update function, please specify either name, surname, email, paid or guess.'
 
@@ -353,8 +361,10 @@ if __name__ == '__main__':
             print 'print matches \t\t- Displays details of the Six Nations championship matches.'
             print 'print results \t\t- Displays short form details of the Six Nations results.'
             print 'print sn-table \t\t- Displays the current Six Nations results table.'
-            print 'print pool-table \t- Displays the current Pool results table.'
+            print 'print pool \t\t- Displays the current Pool results table.'
             print 'print unpaid \t\t- Displays a list of players who have yet to pay.'
+            print 'print short \t\t- Displays a short list of players.'
+            print 'print debug \t\t- Displays the pool table, but with debug information displaying calculations.'
             exit(0)    
 
         else:
