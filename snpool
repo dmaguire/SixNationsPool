@@ -25,9 +25,9 @@ def addGuess (playerid, matchid, guess):
     playerIndex = int(playerid) - 1
     matchIndex = int(matchid) - 1
 
-    fullguess = ( 1 if guess[0] < guess[1] else (0 if guess[0] == guess[1] else -1), guess[0], guess[1] )
+    fullguess = ( 1 if int(guess[0]) < int(guess[1]) else (0 if int(guess[0]) == int(guess[1]) else -1), int(guess[0]), int(guess[1]) )
 
-    if len( players[playerIndex]['guesses'] ) < matchIndex:
+    if len( players[playerIndex]['guesses'] ) < (matchIndex + 1):
         for i in range( matchIndex + 1 ):
             players[playerIndex]['guesses'].append(())
 
@@ -89,6 +89,20 @@ def printPlayers():
         printPlayerDetails(player)
     return
 
+def printUnpaidPlayers():
+    print "================================="
+    print "\tUnpaid Players"
+    print "=================================\n"
+    total = 0
+    for player in players:
+        if player['paid'] == 'False':
+            total += 1
+            print 'Player: {} {} {}'.format( player['forename'], player['surname'], player['email'] )
+
+    print "================================"
+    print "Total Unpaid: {}".format(total)
+    print "================================"
+
 def printPlayerById(id):
     print "=================================="
     print "\tPlayer"
@@ -115,6 +129,15 @@ def printPlayerDetails(player):
     print "\n=================================\n"
 
 
+def printShortFormPlayers():
+    print "=================================="
+    print "\tPlayers"
+    print "==================================\n"
+    for player in players:
+        print '{} - {} {} {} - {}'.format(player['id'], player['forename'], player['surname'], player['email'], ('Paid' if player['paid'] == 'True' else 'Unpaid'))
+
+    print "===================================\n"
+
 def addMatch (hometeam, awayteam, venue, date, time):
     match = { 'id'       : len(matches) + 1,
               'hometeam' : hometeam,
@@ -129,7 +152,7 @@ def addMatch (hometeam, awayteam, venue, date, time):
 
 def addMatchResult (id, result):
     index = int(id) - 1
-    fullresult = (1 if result[0] < result[1] else (0 if result[0] == result[1] else -1), result[0], result[1])
+    fullresult = (1 if int(result[0]) < int(result[1]) else (0 if int(result[0]) == int(result[1]) else -1), int(result[0]), int(result[1]))
     matches[index]['result'] = fullresult
     return
 
@@ -258,8 +281,14 @@ if __name__ == '__main__':
         elif sys.argv[2] == 'sn-table':
             printSNTable()
 
-        elif sys.argv[2] == 'pool-table':
+        elif sys.argv[2] == 'pool':
             printPoolTable()
+
+        elif sys.argv[2] == 'unpaid':
+            printUnpaidPlayers()
+
+        elif sys.argv[2] == 'short':
+            printShortFormPlayers()
 
         elif sys.argv[2] == 'help':
             print 'Facilities for printing details:'
@@ -269,6 +298,7 @@ if __name__ == '__main__':
             print 'print results \t\t- Displays short form details of the Six Nations results.'
             print 'print sn-table \t\t- Displays the current Six Nations results table.'
             print 'print pool-table \t- Displays the current Pool results table.'
+            print 'print unpaid \t\t- Displays a list of players who have yet to pay.'
 
         else:
             'Please specify what to print, either players, matches, or current table.'
