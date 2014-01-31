@@ -52,17 +52,22 @@ def addGuess (playerid, matchid, guess):
     players[playerIndex]['guesses'][matchIndex] = fullguess
     return
 
-def updatePoolResults():
+def updatePoolResults(debug = False):
     for player in players:
-        calculatePlayerResults( player, False )
+        calculatePlayerResults( player, debug )
 
     return
 
 def calculatePlayerResults( player, debug ):
     matchindex  = 0
     total       = 0
-    matchindex  = 0
+    player['points'] = 0
+
+    if debug:
+        print "Player Calc: {} {}".format(player['forename'], player['surname'])
+
     for guess in player['guesses']:
+        total = 0
         if guess:
             result = matches[matchindex]['result']
             if result:
@@ -73,17 +78,23 @@ def calculatePlayerResults( player, debug ):
                     - If score exactly right, 3 points.
                 '''
                 total += (5 if result[0] == guess[0] else 0)
-                total += (2 if result[1] == guess[1] else 0)
-                total += (2 if result[2] == guess[2] else 0)
+                total += (2 if (-7 <= (result[1] - guess[1]) <= 7) else 0)
+                total += (2 if (-7 <= (result[2] - guess[2]) <= 7) else 0)
                 total += (3 if result[1] == guess[1] and result[2] == guess[2] else 0)
+
                 player['points'] += total
+
+                if debug:
+                    print "Guess: {} - Result: {}".format(guess, result)
+                    print "Total: {}".format(total)
+                    print "Player Score: {}".format(player['points'])
 
         matchindex += 1
 
     return
 
-def printPoolTable():
-    updatePoolResults()
+def printPoolTable(debug = False):
+    updatePoolResults(debug)
 
     results = sorted(players, key=lambda player: player['points'], reverse=True)
 
@@ -331,6 +342,9 @@ if __name__ == '__main__':
 
         elif sys.argv[2] == 'short':
             printShortFormPlayers()
+            
+        elif sys.argv[2] == 'debug':
+            printPoolTable(True) 
 
         elif sys.argv[2] == 'help':
             print 'Facilities for printing details:'
