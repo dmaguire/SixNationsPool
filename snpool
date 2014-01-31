@@ -21,6 +21,24 @@ def addPlayer (forename, surname, email, paid = False):
     players.append (player)
     return
 
+def updatePlayer ( id, forename = None, surname = None, email = None, paid = None ):
+    playerIndex = int(id) - 1
+    player = players[playerIndex]
+    
+    if forename:
+        player['forename'] = forename
+
+    if surname: 
+        player['surname'] = surname
+
+    if email:
+        player['email'] = email
+
+    if paid: 
+        player['paid'] = paid
+
+    return
+
 def addGuess (playerid, matchid, guess):
     playerIndex = int(playerid) - 1
     matchIndex = int(matchid) - 1
@@ -260,12 +278,36 @@ if __name__ == '__main__':
             print 'add guess  <player-id> <match-id> <homescore> <awayscore>'
 
         else:
-            'Unknown add function, please specify either add player or add match, or use add help to see usage text.'
+            print 'Unknown add function, please specify either add player or add match, or use add help to see usage text.'
+            exit(1)
 
         updatePoolResults()
         saveData()
 
-    elif sys.argv[1] == 'print':
+    elif sys.argv[1] == 'update':
+        if sys.argv[2] == 'name':
+            updatePlayer( id = sys.argv[3], forename = sys.argv[4] )
+
+        elif sys.argv[2] == 'surname':
+            updatePlayer( id = sys.argv[3], surname = sys.argv[4] )
+
+        elif sys.argv[2] == 'email':
+            updatePlayer( id = sys.argv[3], email = sys.argv[4] )
+
+        elif sys.argv[2] == 'paid':
+            updatePlayer( id = sys.argv[3], paid = sys.argv[4] )
+        
+        elif sys.argv[2] == 'guess':
+            guess = (sys.argv[5], sys.argv[6])
+            addGuess (playerid = sys.argv[3], matchid = sys.argv[4], guess = guess)
+
+        else:
+            print 'Unknown update function, please specify either name, surname, email, paid or guess.'
+
+        updatePoolResults()
+        saveData()
+
+    elif sys.argv[1] == 'print' or sys.argv[1] == 'display':
         if sys.argv[2] == 'players':
             printPlayers()
 
@@ -299,9 +341,11 @@ if __name__ == '__main__':
             print 'print sn-table \t\t- Displays the current Six Nations results table.'
             print 'print pool-table \t- Displays the current Pool results table.'
             print 'print unpaid \t\t- Displays a list of players who have yet to pay.'
+            exit(0)    
 
         else:
-            'Please specify what to print, either players, matches, or current table.'
+            print 'Please specify what to print, either players, matches, or current table.'
+            exit(1)
 
     else:
         print 'Please specify one of either add, print, modify or calculate.'
