@@ -184,13 +184,14 @@ def printShortFormPlayers():
 
     print "===================================\n"
 
-def addMatch (hometeam, awayteam, venue, date, time):
+def addMatch (hometeam, awayteam, venue, date, time, week):
     match = { 'id'       : len(matches) + 1,
               'hometeam' : hometeam,
               'awayteam' : awayteam,
               'venue'    : venue,
               'date'     : date,
               'time'     : time,
+              'week'     : week,
               'result'   : ()
             }
     matches.append(match)
@@ -218,6 +219,15 @@ def printMatches():
         printMatchDetails(match, False)
     return
 
+def printMatchesByWeek(week = 1):
+    print "============================================="
+    print "\tMatches - Week: {}".format(week)
+    print "============================================="
+
+    for match in matches:
+        if match['week'] == week:
+            printMatchDetails(match, True)
+
 def printMatchById(id):
     printMatchDetails(matches[(int(id)-1)], True)
     return
@@ -243,6 +253,8 @@ def printMatchDetails(match, guesses = False):
             'closest'       : () 
             }
 
+    hasGuesses = False
+
     if guesses:
         print '-------------------------------------'
         for player in players:
@@ -250,6 +262,7 @@ def printMatchDetails(match, guesses = False):
             if len(player['guesses']) >= match['id']:
                 matchGuess = player['guesses'][(match['id'] - 1)]
             if matchGuess:
+                hasGuesses = True
                 matchStats['numberGuesses'] += 1
                 matchStats['homescoreTotal'] += matchGuess[1]
                 matchStats['awayscoreTotal'] += matchGuess[2]
@@ -272,30 +285,30 @@ def printMatchDetails(match, guesses = False):
 
                 print '{} {:<10} \t- {} v {}'.format( player['forename'], player['surname'], matchGuess[1], matchGuess[2] )
             
-    
-    print '------------------------------------'
-    print 'Stats: '
-    print 'Average Home Guess: {}'.format( (matchStats['homescoreTotal'] / matchStats['numberGuesses']) )
-    print 'Average Away Guess: {}'.format( (matchStats['awayscoreTotal'] / matchStats['numberGuesses']) )
-    print 'Number for Home Win: {}'.format( matchStats['numberForHome'] )
-    print 'Number for Away Win: {}'.format( matchStats['numberForAway'] )
-    print 'Number for Draw: {}'.format( matchStats['numberForDraw'] )
+    if hasGuesses:    
+        print '------------------------------------'
+        print 'Stats: '
+        print 'Average Home Guess: {}'.format( (matchStats['homescoreTotal'] / matchStats['numberGuesses']) )
+        print 'Average Away Guess: {}'.format( (matchStats['awayscoreTotal'] / matchStats['numberGuesses']) )
+        print 'Number for Home Win: {}'.format( matchStats['numberForHome'] )
+        print 'Number for Away Win: {}'.format( matchStats['numberForAway'] )
+        print 'Number for Draw: {}'.format( matchStats['numberForDraw'] )
 
-    if (matchStats['closest']):
-        if (len(matchStats['closest'][1]) > 1):
-            print 'Closest Guesses: Difference: {} '.format(matchStats['closest'][0])
-            for player in matchStats['closest'][1]:
-                print '\t{} {} - {} {}' .format( player['forename'], 
-                                                 player['surname'], 
-                                                 player['guesses'][(match['id'] - 1)][1], 
-                                                 player['guesses'][(match['id'] - 1)][2])
-        else:
-            player = matchStats['closest'][1][0]
-            print 'Closest Guess - Difference {}: {} {} - {} {}'.format( matchStats['closest'][0],
-                                                                         player['forename'], 
-                                                                         player['surname'], 
-                                                                         player['guesses'][(match['id'] - 1)][1], 
-                                                                         player['guesses'][(match['id'] - 1)][2])
+        if (matchStats['closest']):
+            if (len(matchStats['closest'][1]) > 1):
+                print 'Closest Guesses: Difference: {} '.format(matchStats['closest'][0])
+                for player in matchStats['closest'][1]:
+                    print '\t{} {} - {} {}' .format( player['forename'], 
+                                                     player['surname'], 
+                                                     player['guesses'][(match['id'] - 1)][1], 
+                                                     player['guesses'][(match['id'] - 1)][2])
+            else:
+                player = matchStats['closest'][1][0]
+                print 'Closest Guess - Difference {}: {} {} - {} {}'.format( matchStats['closest'][0],
+                                                                             player['forename'], 
+                                                                             player['surname'], 
+                                                                             player['guesses'][(match['id'] - 1)][1], 
+                                                                             player['guesses'][(match['id'] - 1)][2])
 
 
     print "\n============================================\n"
@@ -363,7 +376,7 @@ if __name__ == '__main__':
             addPlayer ( forename = sys.argv[3], surname = sys.argv[4], email = sys.argv[5], paid = sys.argv[6] )
 
         elif sys.argv[2] == 'match':
-            addMatch ( hometeam = sys.argv[3], awayteam = sys.argv[4], venue = sys.argv[5], date = sys.argv[6], time = sys.argv[7] )
+            addMatch ( hometeam = sys.argv[3], awayteam = sys.argv[4], venue = sys.argv[5], date = sys.argv[6], time = sys.argv[7], week = sys.argv[8] )
 
         elif sys.argv[2] == 'result':
             result = (sys.argv[4], sys.argv[5])
@@ -427,6 +440,9 @@ if __name__ == '__main__':
 
         elif sys.argv[2] == 'matches':
             printMatches()
+
+        elif sys.argv[2] == 'week':
+            printMatchesByWeek(sys.argv[3])
 
         elif sys.argv[2] == 'match':
             printMatchById(sys.argv[3])
