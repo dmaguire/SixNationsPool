@@ -22,6 +22,7 @@ Note: \'print\' can be replaced with \'display\' in all the below commands.
 **print players**       - Displays details of the players signed up for the Pool.  
 **print player \<id\>** - Displays details of a specific player, by ID.  
 **print matches**       - Displays details of the Six Nations championship matches.  
+**print match \<id\>**  - Displays details of individual matches, including player guesses and statistics.
 **print results**       - Displays short form details of the Six Nations results.  
 **print sn-table**      - Displays the current Six Nations results table.  
 **print pool**          - Displays the current Pool results table.  
