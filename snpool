@@ -153,7 +153,24 @@ def printPlayerDetails(player):
         for guess in player['guesses']:
             if guess:
                 winstring = matches[i]['hometeam'] + ' Win!' if guess[0] == -1 else ('Draw!' if guess[0] == 0 else matches[i]['awayteam'] + ' Win!')
-                print 'Match {}\t - {} v {}:\t {} - {} - {}'.format(matches[i]['id'], matches[i]['hometeam'], matches[i]['awayteam'], guess[1], guess[2], winstring)
+
+                print 'Match {}\t - {} v {}:\t {} - {} - {}'.format(
+                                                                    matches[i]['id'], 
+                                                                    matches[i]['hometeam'], 
+                                                                    matches[i]['awayteam'], 
+                                                                    guess[1], 
+                                                                    guess[2], 
+                                                                    winstring)
+                
+                if matches[i]['result']:
+                    winstring = matches[i]['hometeam'] + ' Win!' if matches[i]['result'][0] == -1 else ('Draw!' if matches[i]['result'][0] == 0 else matches[i]['awayteam'] + ' Win!')
+                    homediff = ((guess[1] - matches[i]['result'][1]) if guess[1] > matches[i]['result'][1] else (matches[i]['result'][1] - guess[1]))
+                    awaydiff = ((guess[2] - matches[i]['result'][2]) if guess[2] > matches[i]['result'][2] else (matches[i]['result'][2] - guess[2]))
+                    print '\tActual Result (Difference): {}({}) - {}({}) - {}'.format( matches[i]['result'][1], 
+                                                                                       homediff,
+                                                                                       matches[i]['result'][2],
+                                                                                       awaydiff, 
+                                                                                       winstring)
             i += 1
     print "\n=================================\n"
 
