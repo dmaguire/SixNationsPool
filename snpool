@@ -198,15 +198,90 @@ def printMatches():
     print "=============================================\n"
 
     for match in matches:
-        print "Match {}".format(match['id'])
-        print "Home Team:\t {}".format(match['hometeam'])
-        print "Away Team:\t {}".format(match['awayteam'])
-        print "Venue:\t\t {}".format(match['venue'])
-        print "At:\t\t {} {}".format(match['time'], match['date'])
-        if match['result']:
-            winstring =  match['hometeam'] + ' Win!' if match['result'][0] == -1 else ('Draw!' if match['result'][0] == 0 else match['awayteam'] + ' Win!')
-            print "Result:\t\t {} - {} - {}".format(match['result'][1], match['result'][2], winstring)
-        print "\n============================================\n"
+        printMatchDetails(match, False)
+    return
+
+def printMatchById(id):
+    printMatchDetails(matches[(int(id)-1)], True)
+    return
+
+def printMatchDetails(match, guesses = False):
+    print "Match {}".format(match['id'])
+    print "Home Team:\t {}".format(match['hometeam'])
+    print "Away Team:\t {}".format(match['awayteam'])
+    print "Venue:\t\t {}".format(match['venue'])
+    print "At:\t\t {} {}".format(match['time'], match['date'])
+    
+    if match['result']:
+        winstring =  match['hometeam'] + ' Win!' if match['result'][0] == -1 else ('Draw!' if match['result'][0] == 0 else match['awayteam'] + ' Win!')
+        print "Result:\t\t {} - {} - {}".format(match['result'][1], match['result'][2], winstring)
+   
+    matchStats = {
+            'numberGuesses' : 0,
+            'homescoreTotal': 0,
+            'awayscoreTotal': 0,
+            'numberForHome' : 0,
+            'numberForAway' : 0,
+            'numberForDraw' : 0,
+            'closest'       : () 
+            }
+
+    if guesses:
+        print '-------------------------------------'
+        for player in players:
+            matchGuess = ()
+            if len(player['guesses']) >= match['id']:
+                matchGuess = player['guesses'][(match['id'] - 1)]
+            if matchGuess:
+                matchStats['numberGuesses'] += 1
+                matchStats['homescoreTotal'] += matchGuess[1]
+                matchStats['awayscoreTotal'] += matchGuess[2]
+                matchStats['numberForHome'] += 1 if matchGuess[0] == -1 else 0
+                matchStats['numberForAway'] += 1 if matchGuess[0] == 1 else 0
+                matchStats['numberForDraw'] += 1 if matchGuess[0] == 0 else 0
+                
+                if match['result']:
+                    homediff = ((matchGuess[1] - match['result'][1]) if matchGuess[1] > match['result'][1] else (match['result'][1] - matchGuess[1]))
+                    awaydiff = ((matchGuess[2] - match['result'][2]) if matchGuess[2] > match['result'][2] else (match['result'][2] - matchGuess[2]))
+                    totaldiff = homediff + awaydiff
+                    if matchStats['closest']:
+                        if (matchStats['closest'][0] > totaldiff):
+                            matchStats['closest'] = (totaldiff, [player])
+                        elif (matchStats['closest'][0] == totaldiff):
+                            matchStats['closest'] = (matchStats['closest'][0], matchStats['closest'][1].append(player))
+
+                    else:
+                        matchStats['closest'] = (totaldiff, [player])
+
+                print '{} {:<10} \t- {} v {}'.format( player['forename'], player['surname'], matchGuess[1], matchGuess[2] )
+            
+    
+    print '------------------------------------'
+    print 'Stats: '
+    print 'Average Home Guess: {}'.format( (matchStats['homescoreTotal'] / matchStats['numberGuesses']) )
+    print 'Average Away Guess: {}'.format( (matchStats['awayscoreTotal'] / matchStats['numberGuesses']) )
+    print 'Number for Home Win: {}'.format( matchStats['numberForHome'] )
+    print 'Number for Away Win: {}'.format( matchStats['numberForAway'] )
+    print 'Number for Draw: {}'.format( matchStats['numberForDraw'] )
+
+    if (matchStats['closest']):
+        if (len(matchStats['closest'][1]) > 1):
+            print 'Closest Guesses: Difference: {} '.format(matchStats['closest'][0])
+            for player in matchStats['closest'][1]:
+                print '\t{} {} - {} {}' .format( player['forename'], 
+                                                 player['surname'], 
+                                                 player['guesses'][(match['id'] - 1)][1], 
+                                                 player['guesses'][(match['id'] - 1)][2])
+        else:
+            player = matchStats['closest'][1][0]
+            print 'Closest Guess - Difference {}: {} {} - {} {}'.format( matchStats['closest'][0],
+                                                                         player['forename'], 
+                                                                         player['surname'], 
+                                                                         player['guesses'][(match['id'] - 1)][1], 
+                                                                         player['guesses'][(match['id'] - 1)][2])
+
+
+    print "\n============================================\n"
     return
 
 def printResults():
@@ -336,6 +411,9 @@ if __name__ == '__main__':
         elif sys.argv[2] == 'matches':
             printMatches()
 
+        elif sys.argv[2] == 'match':
+            printMatchById(sys.argv[3])
+
         elif sys.argv[2] == 'results':
             printResults()
 
@@ -359,6 +437,7 @@ if __name__ == '__main__':
             print 'print players \t\t- Displays details of the players signed up for the Pool.'
             print 'print player <id> \t- Displays details of a specific player, by ID.'
             print 'print matches \t\t- Displays details of the Six Nations championship matches.'
+            print 'print match <id> \t- Displays details of an individual match.'
             print 'print results \t\t- Displays short form details of the Six Nations results.'
             print 'print sn-table \t\t- Displays the current Six Nations results table.'
             print 'print pool \t\t- Displays the current Pool results table.'
