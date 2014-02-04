@@ -101,10 +101,10 @@ def printPoolTable(debug = False):
     print '+++++++++++++++++++++++++++++++++++'
     print '\tResults'
     print '+++++++++++++++++++++++++++++++++++'
-    print 'Position\t| Name\t\t\t| Points |'
+    print 'Position\t| Name\t\t\t\t| Points |'
     i = 1
     for player in results:
-        print '{:^5}\t\t| {} {:<10} \t| {:^5}\t |'.format(i, player['forename'], player['surname'], player['points'])
+        print '{:^5}\t\t| {:<4} {} {:<12} \t| {:^5}\t |'.format(i, player['id'], player['forename'], player['surname'], player['points'])
         i += 1
 
     print '++++++++++++++++++++++++++++++++++\n'
